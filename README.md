@@ -2,15 +2,14 @@
 light-rpc是一个java分布式rpc框架，基于zookeeper进行进行服务注册和发现，方便扩展，支持多种序列化协议，如java原生，hessian,FST等。
 默认使用http进行传输协议，数据传输协议可自由扩展。
 
-### 安装与运示例代码
+### 安装与运行服务端示例代码
 安装步骤<br>
  - 下载light-rpc
 ```
      git clone https://github.com/dengqiao/light-rpc.git
 ```
  - 导入下载的maven项目代码到eclipse中<br>
- 
- - 扩展AbstractRpcServlet
+ - 扩展AbstractRpcServlet<br>
 ```
     package com.github.dengqiao.rpc.example;
 
@@ -55,7 +54,7 @@ light-rpc是一个java分布式rpc框架，基于zookeeper进行进行服务注�
 - mvn package打包项目代码，发布到tomcat中，注意ServiceProfile 中ServerContextPath配置正确，
    并且添加jvm 参数-DzkConnStr对应的zookeeper连接信息到tomcat启动参数中
   
--客服端代码示例如下
+### 安装与运行客服端代码，示例如下见JdkRpcProxyFactoryTest类
 ```
      package com.github.dengqiao.rpc.client;
 
