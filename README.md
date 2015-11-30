@@ -22,8 +22,10 @@ light-rpc是一个java分布式rpc框架，基于zookeeper进行进行服务注�
     import com.github.dengqiao.rpc.server.ServiceExporter;
     
     public class SoRpcServlet extends AbstractRpcServlet {
-      //注册ServiceExporter到seList，该例子使用java直接初始化对象，也可以实现从spring容器中获取ServiceExporter Bean
-    	public void registerServiceExporter(ServiceProfile sp, List<ServiceExporter> seList) throws Exception{
+      //注册ServiceExporter到seList，该例子使用java直接初始化对象，
+         也可以实现从spring容器中获取ServiceExporter Bean
+    	public void registerServiceExporter(ServiceProfile sp, 
+    	           List<ServiceExporter> seList) throws Exception{
     		ServiceExporter se = new ServiceExporter();
     		se.setTarget(new SoServiceImpl());
     		se.setServiceInterface(SoService.class);
