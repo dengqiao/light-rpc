@@ -55,6 +55,40 @@ light-rpc是一个java分布式rpc框架，基于zookeeper进行进行服务注�
 - mvn package打包项目代码，发布到tomcat中，注意ServiceProfile 中ServerContextPath配置正确，
    并且添加jvm 参数-DzkConnStr对应的zookeeper连接信息到tomcat启动参数中
   
+-客服端代码示例如下
+```
+     package com.github.dengqiao.rpc.client;
+
+import com.alibaba.fastjson.JSON;
+import com.github.dengqiao.rpc.core.ClientProfile;
+import com.github.dengqiao.rpc.core.ServiceProfile;
+import com.github.dengqiao.rpc.core.codec.impl.FstCodec;
+import com.github.dengqiao.rpc.example.So;
+import com.github.dengqiao.rpc.example.SoService;
+
+public class JdkRpcProxyFactoryTest {
+
+	public static void main(String[] args) {
+	 //同服务端配置
+		ServiceProfile  sp = new ServiceProfile();
+		sp.setServerContextPath("gos");
+		sp.setServerPort("8080");
+		sp.setServiceAppName("gos-query");
+		sp.setRpcCodec(new FstCodec());
+		
+		ClientProfile cp = new ClientProfile();
+		cp.setClientAppName("test");
+		cp.setReadTimeout(30000);
+		SoService service = 
+				(SoService)JdkRpcProxyFactoryBean.create(SoService.class, cp, sp);
+		So so = service.getSoById(2L);
+		System.out.println(JSON.toJSONString(so));
+		
+	}
+
+}
+```
+注意在运行此客户端代码时也需要添加jvm 参数-DzkConnStr对应的zookeeper连接信息
 
 
 
