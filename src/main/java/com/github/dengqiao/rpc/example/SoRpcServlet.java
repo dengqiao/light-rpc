@@ -28,6 +28,7 @@ public class SoRpcServlet extends AbstractRpcServlet {
 		sp.setServerContextPath("gos");
 		sp.setServerPort("8080");
 		sp.setServiceAppName("gos-query");
+		sp.setServiceVersion("0.01");
 		sp.setUrlPrefix("rpc");
 		sp.setRpcCodec(new FstCodec());
 		return sp;

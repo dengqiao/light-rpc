@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.github.dengqiao.rpc.core.ClientProfile;
-import com.github.dengqiao.rpc.core.codec.impl.HessianCodec;
+import com.github.dengqiao.rpc.core.codec.impl.FstCodec;
 import com.github.dengqiao.rpc.example.SoService;
 
 public class JdkRpcProxyFactoryTest extends TestCase{
@@ -21,7 +21,7 @@ public class JdkRpcProxyFactoryTest extends TestCase{
 		clientProfile.setClientAppName("test");
 		clientProfile.setServiceAppName("user");
 		clientProfile.setServiceVersion("0.01");
-		clientProfile.setRpcCodec(new HessianCodec());
+		clientProfile.setRpcCodec(new FstCodec());
 		SoService soService = 
 				(SoService)JdkRpcProxyFactoryExtend.create(JdkRpcProxyFactoryExtend.class,
 						SoService.class, clientProfile);

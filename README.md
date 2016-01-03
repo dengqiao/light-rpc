@@ -41,6 +41,7 @@ light-rpc是一个java分布式rpc框架，基于zookeeper进行进行服务注�
     		sp.setServerPort("8080");
     		//设置应用名称，用于服务注册时zookeeper路径
     		sp.setServiceAppName("gos-query");
+    		sp.setServiceVersion("0.01");
     		//设置web.xml中AbstractRpcServlet请求的url前缀
     		sp.setUrlPrefix("rpc");
     		//设置服务端序列化实现
@@ -68,18 +69,14 @@ import com.github.dengqiao.rpc.example.SoService;
 public class JdkRpcProxyFactoryTest {
 
 	public static void main(String[] args) {
-	 //同服务端配置
-		ServiceProfile  sp = new ServiceProfile();
-		sp.setServerContextPath("gos");
-		sp.setServerPort("8080");
-		sp.setServiceAppName("gos-query");
-		sp.setRpcCodec(new FstCodec());
-		
 		ClientProfile cp = new ClientProfile();
 		cp.setClientAppName("test");
+		cp.setServiceAppName("gos-query");
+		cp.setServiceVersion("0.01");
+		cp.setRpcCodec(new FstCodec());
 		cp.setReadTimeout(30000);
 		SoService service = 
-				(SoService)JdkRpcProxyFactoryBean.create(SoService.class, cp, sp);
+				(SoService)JdkRpcProxyFactoryBean.create(SoService.class, cp);
 		So so = service.getSoById(2L);
 		System.out.println(JSON.toJSONString(so));
 		
