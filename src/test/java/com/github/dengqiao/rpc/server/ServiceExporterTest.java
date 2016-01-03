@@ -13,7 +13,7 @@ import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.RpcResponse;
 import com.github.dengqiao.rpc.core.ServiceProfile;
 import com.github.dengqiao.rpc.core.ZKClientHelper;
-import com.github.dengqiao.rpc.core.codec.impl.KryoCodec;
+import com.github.dengqiao.rpc.core.codec.impl.HessianCodec;
 import com.github.dengqiao.rpc.example.So;
 import com.github.dengqiao.rpc.example.SoService;
 import com.github.dengqiao.rpc.example.SoServiceImpl;
@@ -38,7 +38,7 @@ public class ServiceExporterTest extends TestCase {
 		sp.setServerContextPath("gos");
 		sp.setServerPort("8080");
 		sp.setServerContextPath("gos-query");
-		sp.setRpcCodec(new KryoCodec());
+		sp.setRpcCodec(new HessianCodec());
 		sr = new ServiceRegister(path, sp,zkClient);
 		exporter.setTarget(new SoServiceImpl());
 		exporter.setServiceInterface(SoService.class);

@@ -1,13 +1,12 @@
 package com.github.dengqiao.rpc.core;
 
 
-public class ClientProfile {
+
+public class ClientProfile extends BaseProfile{
 	
 	private String clientAppName;
-	
-	private String groupName = "default";
-	
-	private int   readTimeout;
+
+	private int   readTimeout = 10000;
 	
 	private int   retryCount;
 
@@ -17,14 +16,6 @@ public class ClientProfile {
 
 	public void setClientAppName(String clientAppName) {
 		this.clientAppName = clientAppName;
-	}
-
-	public String getGroupName() {
-		return groupName;
-	}
-
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
 	}
 
 	public int getReadTimeout() {

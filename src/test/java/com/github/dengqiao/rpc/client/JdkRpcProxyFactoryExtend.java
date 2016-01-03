@@ -16,7 +16,7 @@ public class JdkRpcProxyFactoryExtend extends JdkRpcProxyFactoryBean {
 		so.setId(id);
 		response.setResponse(so);
 		try{
-			return this.getServicePrifile().getRpcCodec().encode(response);
+			return this.getClientProfile().getRpcCodec().encode(response);
 		}catch(Exception e){
 			throw new RpcException(e);
 		}

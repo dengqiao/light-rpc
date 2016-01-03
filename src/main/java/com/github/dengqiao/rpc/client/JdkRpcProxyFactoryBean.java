@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.github.dengqiao.rpc.core.ClientProfile;
 import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.core.RpcResponse;
-import com.github.dengqiao.rpc.core.ServiceProfile;
 import com.github.dengqiao.rpc.core.requestHandler.impl.HttpRequestHandler;
 
 public class JdkRpcProxyFactoryBean extends AbstractProxyFactoryBean implements InvocationHandler {
@@ -25,21 +24,21 @@ public class JdkRpcProxyFactoryBean extends AbstractProxyFactoryBean implements 
 		throw reponse.getException();
 	}
 	
-	public Object createProxy(Class<?> clazz,ClientProfile clientProfile,ServiceProfile serviceProfile) {
+	public Object createProxy(Class<?> clazz,ClientProfile clientProfile) {
 		this.setServiceInterface(clazz);
 		this.setClientProfile(clientProfile);
-		this.setServicePrifile(serviceProfile);
+		this.init();
 		initServiceLocator();
 		this.setRequestHandler(new HttpRequestHandler());
 		return Proxy.newProxyInstance(getBeanClassLoader(), new Class<?>[]{clazz}, this);
 	}
 	
-	public static Object create(Class<?> clazz,ClientProfile clientProfile,ServiceProfile serviceProfile){
-		return create(JdkRpcProxyFactoryBean.class,clazz,clientProfile,serviceProfile);
+	public static Object create(Class<?> clazz,ClientProfile clientProfile){
+		return create(JdkRpcProxyFactoryBean.class,clazz,clientProfile);
 	}
 	
 	public static Object create(Class<? extends JdkRpcProxyFactoryBean> jdkRpcProxyFactoryBean ,
-			Class<?> clazz,ClientProfile clientProfile,ServiceProfile serviceProfile){
+			Class<?> clazz,ClientProfile clientProfile){
 		Object proxy = proxyMap.get(clazz);
 		if(proxy == null ){
 			synchronized (JdkRpcProxyFactoryBean.class) {
@@ -48,7 +47,7 @@ public class JdkRpcProxyFactoryBean extends AbstractProxyFactoryBean implements 
 					return proxy;
 				}
 				try {
-					proxy = jdkRpcProxyFactoryBean.newInstance().createProxy(clazz,clientProfile,serviceProfile);
+					proxy = jdkRpcProxyFactoryBean.newInstance().createProxy(clazz,clientProfile);
 				} catch (Exception e) {
 					throw new RpcException("create proxy exception ", e);
 				}

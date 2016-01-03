@@ -2,9 +2,12 @@ package com.github.dengqiao.rpc.core;
 
 public class ZkPathUtils {
 	
-	public static  String getServiceZkPath(ServiceProfile profile,Class<?> serviceInterface)  {
-		
-		return "/"+ profile.getServiceAppName() +"/" + getServiceName(serviceInterface) ;
+	public static  String getServiceZkPath(BaseProfile baseProfile , Class<?> serviceInterface)  {
+		StringBuilder sb = new StringBuilder(50);
+		sb.append("/").append(baseProfile.getServiceAppName())
+		.append("/").append(baseProfile.getGroupName())
+		.append("/").append(baseProfile.getServiceVersion());
+		return sb.toString();
 	}
 	
 	public static String getServiceName(Class<?> serviceInterface){

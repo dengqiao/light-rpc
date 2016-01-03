@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.codec.impl.HessianCodec;
 import com.github.dengqiao.rpc.core.codec.impl.JavaCodec;
-import com.github.dengqiao.rpc.core.codec.impl.KryoCodec;
 import com.github.dengqiao.rpc.example.So;
 
 public class CodecTest {
@@ -27,7 +26,6 @@ public class CodecTest {
 	
 	private static void count(int count,RpcRequest request){
 		hessian(count,request);
-		kryo(count,request);
 		java(count,request);
 	}
 	
@@ -43,21 +41,6 @@ public class CodecTest {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-	}
-	
-	private static void kryo(int count,RpcRequest request) {
-		try{
-			long start = System.currentTimeMillis();
-			KryoCodec kryoCodec = new KryoCodec();
-			int length = 0;
-			for(int i=0;i<count;i++){
-				length = kryoCodec.encode(request).length ;
-			}
-			System.out.println("kryoCodec cost "+(System.currentTimeMillis() - start)+" ,byte length "+length+ " ,count "+count);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
 	}
 	
 	private static void java(int count,RpcRequest request) {

@@ -4,15 +4,14 @@ import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 import com.github.dengqiao.rpc.core.ClientProfile;
 import com.github.dengqiao.rpc.core.IpUtils;
 import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.RpcResponse;
-import com.github.dengqiao.rpc.core.ServiceProfile;
 import com.github.dengqiao.rpc.core.ZkPathUtils;
 import com.github.dengqiao.rpc.core.requestHandler.RequestHandler;
 
@@ -20,18 +19,38 @@ public abstract class AbstractProxyFactoryBean {
 	
 	private Class<?> serviceInterface;
 	
-	private Object serviceProxy;
-	
 	private ClientProfile clientProfile;
-	
-	private ServiceProfile servicePrifile;
 	
 	private ServiceLocator serviceLocator;
 	
 	private RequestHandler requestHandler;
 	
+	public void init(){
+		if(serviceInterface == null){
+			throw new RuntimeException("AbstractProxyFactoryBean serviceInterface is null");
+		}
+		if(clientProfile == null){
+			throw new RuntimeException("AbstractProxyFactoryBean clientProfile is null");
+		}
+		if(StringUtils.isEmpty(clientProfile.getClientAppName())){
+			throw new RuntimeException("AbstractProxyFactoryBean clientProfile clientAppName is empty");
+		}
+		if(StringUtils.isEmpty(clientProfile.getServiceAppName())){
+			throw new RuntimeException("AbstractProxyFactoryBean clientProfile serviceAppName is empty");
+		}
+		if(StringUtils.isEmpty(clientProfile.getGroupName())){
+			throw new RuntimeException("AbstractProxyFactoryBean clientProfile groupName is empty");
+		}
+		if(StringUtils.isEmpty(clientProfile.getServiceVersion())){
+			throw new RuntimeException("AbstractProxyFactoryBean clientProfile serviceVersion is empty");
+		}
+		if(clientProfile.getRpcCodec()==null){
+			throw new RuntimeException("AbstractProxyFactoryBean clientProfile rpcCodec is null");
+		}
+	}
+	
 	protected void initServiceLocator(){
-		this.setServiceLocator(new ServiceLocator(ZkPathUtils.getServiceZkPath(servicePrifile, serviceInterface)));
+		this.setServiceLocator(new ServiceLocator(ZkPathUtils.getServiceZkPath(clientProfile, serviceInterface)));
 	}
 	
 	protected RpcRequest createRpcRequest(Method method,Object[] args) {
@@ -47,15 +66,15 @@ public abstract class AbstractProxyFactoryBean {
 	}
 	
 	protected RpcResponse executeRpcRequest(RpcRequest rpcRequest){
-		byte[] byteRequest = servicePrifile.getRpcCodec().encode(rpcRequest);
+		byte[] byteRequest = clientProfile.getRpcCodec().encode(rpcRequest);
 		byte[] response = doRequest(rpcRequest,byteRequest);
-		return (RpcResponse)servicePrifile.getRpcCodec().decode(response);
+		return (RpcResponse)clientProfile.getRpcCodec().decode(response);
 	}
 	
 	protected byte[] doRequest(RpcRequest rpcRequest,byte[] byteRequest){
 		String serviceUrl = serviceLocator.select();
-		if(!StringUtils.hasLength(serviceUrl)){
-			throw new RpcException("serviceZkPath "+ ZkPathUtils.getServiceZkPath(servicePrifile, serviceInterface)+" dose not exist online service");
+		if(!StringUtils.isEmpty(serviceUrl)){
+			throw new RpcException("serviceZkPath "+ ZkPathUtils.getServiceZkPath(clientProfile, serviceInterface)+" dose not exist online service");
 		}
 		return requestHandler.doRequest(rpcRequest, byteRequest, clientProfile,serviceUrl);
 	}
@@ -72,13 +91,7 @@ public abstract class AbstractProxyFactoryBean {
 		this.serviceInterface = serviceInterface;
 	}
 
-	public Object getServiceProxy() {
-		return serviceProxy;
-	}
-
-	public void setServiceProxy(Object serviceProxy) {
-		this.serviceProxy = serviceProxy;
-	}
+	
 
 	public ClientProfile getClientProfile() {
 		return clientProfile;
@@ -86,14 +99,6 @@ public abstract class AbstractProxyFactoryBean {
 
 	public void setClientProfile(ClientProfile clientProfile) {
 		this.clientProfile = clientProfile;
-	}
-
-	public ServiceProfile getServicePrifile() {
-		return servicePrifile;
-	}
-
-	public void setServicePrifile(ServiceProfile servicePrifile) {
-		this.servicePrifile = servicePrifile;
 	}
 
 	public ServiceLocator getServiceLocator() {

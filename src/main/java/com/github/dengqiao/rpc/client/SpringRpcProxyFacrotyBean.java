@@ -12,6 +12,8 @@ import com.github.dengqiao.rpc.core.RpcResponse;
 public class SpringRpcProxyFacrotyBean extends AbstractProxyFactoryBean implements FactoryBean,InitializingBean,MethodInterceptor{
 	
 
+	private Object serviceProxy;
+	
 	public Object getObject() throws Exception {
 		return this.getServiceProxy();
 	}
@@ -38,5 +40,12 @@ public class SpringRpcProxyFacrotyBean extends AbstractProxyFactoryBean implemen
 		return true;
 	}
 
+	public Object getServiceProxy() {
+		return serviceProxy;
+	}
+
+	public void setServiceProxy(Object serviceProxy) {
+		this.serviceProxy = serviceProxy;
+	}
 	
 }
