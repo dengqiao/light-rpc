@@ -8,12 +8,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.ClassUtils;
 
 import com.github.dengqiao.rpc.core.ClientProfile;
-import com.github.dengqiao.rpc.core.IpUtils;
 import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.RpcResponse;
-import com.github.dengqiao.rpc.core.ZkPathUtils;
 import com.github.dengqiao.rpc.core.requestHandler.RequestHandler;
+import com.github.dengqiao.rpc.locate.ServiceLocator;
+import com.github.dengqiao.rpc.utils.IpUtils;
+import com.github.dengqiao.rpc.utils.ServicePathUtils;
 
 public abstract class AbstractProxyFactoryBean {
 	
@@ -49,10 +50,6 @@ public abstract class AbstractProxyFactoryBean {
 		}
 	}
 	
-	protected void initServiceLocator(){
-		this.setServiceLocator(new ServiceLocator(ZkPathUtils.getServiceZkPath(clientProfile, serviceInterface)));
-	}
-	
 	protected RpcRequest createRpcRequest(Method method,Object[] args) {
 		RpcRequest rpcRequest = new RpcRequest();
 		rpcRequest.setServiceFullName(serviceInterface.getName());
@@ -74,7 +71,7 @@ public abstract class AbstractProxyFactoryBean {
 	protected byte[] doRequest(RpcRequest rpcRequest,byte[] byteRequest){
 		String serviceUrl = serviceLocator.select();
 		if(!StringUtils.isEmpty(serviceUrl)){
-			throw new RpcException("serviceZkPath "+ ZkPathUtils.getServiceZkPath(clientProfile, serviceInterface)+" dose not exist online service");
+			throw new RpcException("serviceZkPath "+ ServicePathUtils.getServicePath(clientProfile)+" dose not exist online service");
 		}
 		return requestHandler.doRequest(rpcRequest, byteRequest, clientProfile,serviceUrl);
 	}

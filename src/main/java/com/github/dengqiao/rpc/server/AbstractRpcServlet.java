@@ -23,7 +23,9 @@ import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.RpcResponse;
 import com.github.dengqiao.rpc.core.ServiceProfile;
-import com.github.dengqiao.rpc.core.ZkPathUtils;
+import com.github.dengqiao.rpc.register.ServiceRegister;
+import com.github.dengqiao.rpc.register.impl.ZkServiceRegister;
+import com.github.dengqiao.rpc.utils.ServicePathUtils;
 
 public abstract class AbstractRpcServlet extends HttpServlet {
 
@@ -36,8 +38,12 @@ public abstract class AbstractRpcServlet extends HttpServlet {
 			List<ServiceExporter> seList = new ArrayList<ServiceExporter>();
 			registerServiceExporter(this.getServiceProfile(), seList);
 			for( ServiceExporter se : seList){
-				seMap.put(ZkPathUtils.getServiceName(se.getServiceInterface()), se);
+				seMap.put(ServicePathUtils.getServiceName(se.getServiceInterface()), se);
 			}
+			ServiceRegister sr = new ZkServiceRegister();
+			sr.setServiceProfile(this.getServiceProfile());
+			sr.register();
+			
 		}catch(Exception e){
 			throw new ServletException("servlet init exception",e);
 		}

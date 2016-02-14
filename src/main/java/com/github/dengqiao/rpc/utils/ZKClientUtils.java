@@ -1,4 +1,4 @@
-package com.github.dengqiao.rpc.core;
+package com.github.dengqiao.rpc.utils;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -16,25 +16,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-public class ZKClientHelper {
-	private static final Logger logger = LoggerFactory.getLogger(ZKClientHelper.class);
+public class ZKClientUtils {
+	private static final Logger logger = LoggerFactory.getLogger(ZKClientUtils.class);
 	private static volatile CuratorFramework _zkClient = null;
 	private static Object lock = new Object();
 	
-	public static CuratorFramework getZKClient(){
+	public static CuratorFramework getZKClient(String zkConnStr){
 		if( _zkClient == null){
 			synchronized (lock) {
 				if( _zkClient != null){
 					return _zkClient;
 				}
-				String zkConnStr = System.getProperty("zkConnStr");
-				_zkClient =  getZKClient(zkConnStr);
+				if(!StringUtils.hasLength(zkConnStr)){
+					zkConnStr = System.getProperty("zkConnStr");
+				}
+				_zkClient =  getZKClient0(zkConnStr);
 			}
 		}
 		return _zkClient;
 	}
 	
-	public static CuratorFramework getZKClient(String zkConnStr){
+	private static CuratorFramework getZKClient0(String zkConnStr){
 		if (!StringUtils.hasLength(zkConnStr)){
 			throw new RuntimeException("can not found zkConnStr from env!!!!!!!!!!!!!!");
 		}
@@ -154,6 +156,13 @@ public class ZKClientHelper {
 	public static void ensure(CuratorFramework client,String path)throws Exception {
 		EnsurePath ensurePath = client.newNamespaceAwareEnsurePath(path);
 		ensurePath.ensure(client.getZookeeperClient());
+	}
+	
+	public static void clearZkClient(){
+		if(_zkClient!=null){
+			_zkClient.close();
+		}
+		_zkClient = null;
 	}
 
 }

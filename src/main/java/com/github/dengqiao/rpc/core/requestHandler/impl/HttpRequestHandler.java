@@ -12,8 +12,8 @@ import org.apache.commons.io.IOUtils;
 import com.github.dengqiao.rpc.core.ClientProfile;
 import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.core.RpcRequest;
-import com.github.dengqiao.rpc.core.ZkPathUtils;
 import com.github.dengqiao.rpc.core.requestHandler.RequestHandler;
+import com.github.dengqiao.rpc.utils.ServicePathUtils;
 
 public class HttpRequestHandler implements RequestHandler {
 
@@ -22,7 +22,7 @@ public class HttpRequestHandler implements RequestHandler {
 		if(!serviceUrl.startsWith("http")){
 			serviceUrl = "http://" + serviceUrl;
 		}
-		serviceUrl = serviceUrl + "/" + ZkPathUtils.getServiceName(rpcRequest.getServiceFullName());
+		serviceUrl = serviceUrl + "/" + ServicePathUtils.getServiceName(rpcRequest.getServiceFullName());
 		HttpURLConnection httpConn = sendRequest(rpcRequest, byteRequest,
 				clientProfile, serviceUrl);
 		return getResponse(httpConn, rpcRequest, byteRequest, clientProfile);

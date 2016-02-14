@@ -1,4 +1,4 @@
-package com.github.dengqiao.rpc.core;
+package com.github.dengqiao.rpc.utils;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -14,7 +14,6 @@ public class IpUtils {
 	
 	private static String serverIp = "";
 	
-	//dengqiao 2015-08-20 update local ip cache
 	static {
 		try {
 			serverIp = "" + getLocalIPList().get(0);

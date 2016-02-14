@@ -9,32 +9,35 @@ import org.apache.curator.test.TestingServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import com.github.dengqiao.rpc.core.ZKClientHelper;
+import com.github.dengqiao.rpc.locate.impl.ZkServiceLocator;
+import com.github.dengqiao.rpc.utils.ServicePathUtils;
+import com.github.dengqiao.rpc.utils.ZKClientUtils;
 
 public class ServiceLocatorTest extends TestCase {
 	
 	private TestingServer server;
 	private CuratorFramework zkClient;
-	private ServiceLocator sl;
-	private String path = "/test/userService";
+	private ZkServiceLocator sl;
 	
 	@BeforeClass
 	public void setUp() throws Exception{
 		server = new TestingServer();
 		server.start();
-		zkClient = ZKClientHelper.getZKClient(server.getConnectString());
-		sl = new ServiceLocator(path,zkClient);
-		
+		zkClient = ZKClientUtils.getZKClient(server.getConnectString());
+		sl = new ZkServiceLocator();
+		sl.setZkConnStr(server.getConnectString());
+		sl.setClientProfile(TestHelper.getClientProfile());
+		sl.afterPropertiesSet();
 	}
 	
 	@AfterClass
 	public void tearDown() throws IOException {
 		server.stop();
+		ZKClientUtils.clearZkClient();
 	}
 	
 	public void testInitServiceUrlList() throws Exception{
-		ZKClientHelper.ensure(zkClient, path);
-		ZKClientHelper.createEphemeral(zkClient, path+"/" + "dq", "dengqiao".getBytes());
+		ZKClientUtils.createEphemeral(zkClient, ServicePathUtils.getServicePath(sl.getClientProfile())+"/" + "dq", "dengqiao".getBytes());
 		Thread.sleep(1000);
 		assertEquals(1, sl.getServiceUrlMap().size());
 		assertEquals("dengqiao", sl.getServiceUrlMap().get(1));

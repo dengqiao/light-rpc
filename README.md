@@ -75,8 +75,12 @@ public class JdkRpcProxyFactoryTest {
 		cp.setServiceVersion("0.01");
 		cp.setRpcCodec(new FstCodec());
 		cp.setReadTimeout(30000);
+		
+		ServiceLocator sl = new ZkServiceLocator();
+		sl.setClientProfile(TestHelper.getClientProfile());
+		
 		SoService service = 
-				(SoService)JdkRpcProxyFactoryBean.create(SoService.class, cp);
+				(SoService)JdkRpcProxyFactoryBean.create(SoService.class, sl);
 		So so = service.getSoById(2L);
 		System.out.println(JSON.toJSONString(so));
 		

@@ -4,41 +4,44 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.test.TestingServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.springframework.util.Assert;
 
-import com.github.dengqiao.rpc.client.ServiceLocator;
-import com.github.dengqiao.rpc.core.ServiceProfile;
-import com.github.dengqiao.rpc.core.ZKClientHelper;
+import com.github.dengqiao.rpc.client.TestHelper;
+import com.github.dengqiao.rpc.locate.impl.ZkServiceLocator;
+import com.github.dengqiao.rpc.register.impl.ZkServiceRegister;
+import com.github.dengqiao.rpc.utils.ZKClientUtils;
 
 public class ServiceRegisterTest extends TestCase {
 	
 	private TestingServer server;
-	private CuratorFramework zkClient;
-	private ServiceLocator sl;
-	private ServiceRegister sg;
-	private String path = "/test/userService";
+	private ZkServiceLocator sl;
+	private ZkServiceRegister sg;
 	
 	@BeforeClass
 	public void setUp() throws Exception{
+		
 		server = new TestingServer();
 		server.start();
-		zkClient = ZKClientHelper.getZKClient(server.getConnectString());
+		//zkClient = ZKClientUtils.getZKClient(server.getConnectString());
 		//zkClient = ZKClientHelper.getZKClient("192.168.59.103:2181");
-		sl = new ServiceLocator(path,zkClient);
-		ServiceProfile  sp = new ServiceProfile();
-		sp.setServerContextPath("gos");
-		sp.setServerPort("8080");
-		sp.setServerContextPath("gos-query");
-		sg = new ServiceRegister(path, sp,zkClient);
+		sl = new ZkServiceLocator();
+		sl.setZkConnStr(server.getConnectString());
+		sl.setClientProfile(TestHelper.getClientProfile());
+		sl.afterPropertiesSet();
+		
+		sg = new ZkServiceRegister();
+		sg.setServiceProfile(TestHelper.getServiceProfile());
+		sg.setZkConnStr(server.getConnectString());
+		sg.afterPropertiesSet();
 	}
 	
 	@AfterClass
 	public void tearDown() throws IOException {
 		server.stop();
+		ZKClientUtils.clearZkClient();
 	}
 	
 	public void testRegister() throws Exception{
@@ -53,7 +56,7 @@ public class ServiceRegisterTest extends TestCase {
 		sg.register();
 		Thread.sleep(1000L);
 		sg.unRegister();
-		Thread.sleep(3000L);
+		Thread.sleep(1000L);
 		Assert.isNull(sl.select());
 		
 		sg.register();

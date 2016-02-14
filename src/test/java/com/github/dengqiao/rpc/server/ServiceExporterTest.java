@@ -1,29 +1,29 @@
 package com.github.dengqiao.rpc.server;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
-import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.test.TestingServer;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.util.Assert;
 
 import com.alibaba.fastjson.JSON;
+import com.github.dengqiao.rpc.client.TestHelper;
 import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.RpcResponse;
-import com.github.dengqiao.rpc.core.ServiceProfile;
-import com.github.dengqiao.rpc.core.ZKClientHelper;
-import com.github.dengqiao.rpc.core.codec.impl.HessianCodec;
 import com.github.dengqiao.rpc.example.So;
 import com.github.dengqiao.rpc.example.SoService;
 import com.github.dengqiao.rpc.example.SoServiceImpl;
+import com.github.dengqiao.rpc.register.impl.ZkServiceRegister;
+import com.github.dengqiao.rpc.utils.ZKClientUtils;
 
 public class ServiceExporterTest extends TestCase {
 	
 	private TestingServer server;
-	private ServiceRegister sr;
-	private CuratorFramework zkClient;
-	private String path = "/test/userService";
+	private ZkServiceRegister sr;
 	
 	private ServiceExporter exporter;
 	
@@ -33,18 +33,21 @@ public class ServiceExporterTest extends TestCase {
 		exporter = new ServiceExporter();
 		server = new TestingServer();
 		server.start();
-		zkClient = ZKClientHelper.getZKClient(server.getConnectString());
-		ServiceProfile  sp = new ServiceProfile();
-		sp.setServerContextPath("gos");
-		sp.setServerPort("8080");
-		sp.setServerContextPath("gos-query");
-		sp.setRpcCodec(new HessianCodec());
-		sr = new ServiceRegister(path, sp,zkClient);
+		sr = new ZkServiceRegister();
+		sr.setServiceProfile(TestHelper.getServiceProfile());
+		sr.setZkConnStr(server.getConnectString());
+		sr.afterPropertiesSet();
+		
 		exporter.setTarget(new SoServiceImpl());
 		exporter.setServiceInterface(SoService.class);
-		exporter.setServiceProfile(sp);
-		exporter.setServiceRegister(sr);
+		exporter.setServiceProfile(TestHelper.getServiceProfile());
 		exporter.initMethodMap();
+	}
+	
+	@AfterClass
+	public void tearDown() throws IOException {
+		server.stop();
+		ZKClientUtils.clearZkClient();
 	}
 	
 	@Test

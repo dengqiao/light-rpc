@@ -1,8 +1,10 @@
-package com.github.dengqiao.rpc.core;
+package com.github.dengqiao.rpc.utils;
 
-public class ZkPathUtils {
+import com.github.dengqiao.rpc.core.BaseProfile;
+
+public class ServicePathUtils {
 	
-	public static  String getServiceZkPath(BaseProfile baseProfile , Class<?> serviceInterface)  {
+	public static  String getServicePath(BaseProfile baseProfile)  {
 		StringBuilder sb = new StringBuilder(50);
 		sb.append("/").append(baseProfile.getServiceAppName())
 		.append("/").append(baseProfile.getGroupName())

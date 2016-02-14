@@ -20,7 +20,6 @@ public class SpringRpcProxyFacrotyBean extends AbstractProxyFactoryBean implemen
 	
 	public void afterPropertiesSet() throws Exception {
 		this.setServiceProxy(new ProxyFactory(getServiceInterface(), this).getProxy(getBeanClassLoader()));
-		this.initServiceLocator();
 	}
 	
 	public Object invoke(MethodInvocation invocation) throws Throwable {

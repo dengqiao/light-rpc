@@ -5,9 +5,9 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.github.dengqiao.rpc.core.ClientProfile;
-import com.github.dengqiao.rpc.core.codec.impl.FstCodec;
 import com.github.dengqiao.rpc.example.SoService;
+import com.github.dengqiao.rpc.locate.ServiceLocator;
+import com.github.dengqiao.rpc.locate.impl.ZkServiceLocator;
 
 public class JdkRpcProxyFactoryTest extends TestCase{
 	
@@ -17,14 +17,11 @@ public class JdkRpcProxyFactoryTest extends TestCase{
 	
 	@Test
 	public void testCreateProxy(){
-		ClientProfile clientProfile = new ClientProfile();
-		clientProfile.setClientAppName("test");
-		clientProfile.setServiceAppName("user");
-		clientProfile.setServiceVersion("0.01");
-		clientProfile.setRpcCodec(new FstCodec());
+		ServiceLocator sl = new ZkServiceLocator();
+		sl.setClientProfile(TestHelper.getClientProfile());
 		SoService soService = 
 				(SoService)JdkRpcProxyFactoryExtend.create(JdkRpcProxyFactoryExtend.class,
-						SoService.class, clientProfile);
+						SoService.class, sl);
 		Assert.assertTrue(soService.getSoById(1L).getId().equals(1L));
 	}
 	

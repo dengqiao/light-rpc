@@ -13,19 +13,16 @@ import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.RpcResponse;
 import com.github.dengqiao.rpc.core.ServiceProfile;
-import com.github.dengqiao.rpc.core.ZkPathUtils;
+import com.github.dengqiao.rpc.utils.ServicePathUtils;
 
 public class ServiceExporter implements InitializingBean{
 	
 	private Object target;
 	private Class<?> serviceInterface;
 	private ServiceProfile serviceProfile;
-	private ServiceRegister serviceRegister;
 	private Map<String,Method> methodMap = new HashMap<String,Method>();
 	
 	public void afterPropertiesSet() throws Exception {
-		serviceRegister = new ServiceRegister(ZkPathUtils.getServiceZkPath(serviceProfile, serviceInterface),serviceProfile);
-		serviceRegister.register();
 		initMethodMap();
 	}
 	
@@ -58,18 +55,9 @@ public class ServiceExporter implements InitializingBean{
 	}
 	
 	public String getServiceName(){
-		return ZkPathUtils.getServiceName(this.serviceInterface);
+		return ServicePathUtils.getServiceName(this.serviceInterface);
 	}
 
-
-	public ServiceRegister getServiceRegister() {
-		return serviceRegister;
-	}
-
-
-	public void setServiceRegister(ServiceRegister serviceRegister) {
-		this.serviceRegister = serviceRegister;
-	}
 
 	public Object getTarget() {
 		return target;

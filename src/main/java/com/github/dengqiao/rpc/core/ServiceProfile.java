@@ -5,7 +5,7 @@ public class ServiceProfile extends BaseProfile{
 	
 	private String serverContextPath;
 	
-	private String urlPrefix;
+	private String serviceUrlPrefix;
 	
 	private String serverPort;
 
@@ -25,13 +25,12 @@ public class ServiceProfile extends BaseProfile{
 		this.serverContextPath = serverContextPath;
 	}
 
-	public String getUrlPrefix() {
-		return urlPrefix;
+	public String getServiceUrlPrefix() {
+		return serviceUrlPrefix;
 	}
 
-	public void setUrlPrefix(String urlPrefix) {
-		this.urlPrefix = urlPrefix;
+	public void setServiceUrlPrefix(String serviceUrlPrefix) {
+		this.serviceUrlPrefix = serviceUrlPrefix;
 	}
-
 	
 }

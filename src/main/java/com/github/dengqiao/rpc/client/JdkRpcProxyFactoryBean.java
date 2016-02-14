@@ -6,10 +6,10 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.github.dengqiao.rpc.core.ClientProfile;
 import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.core.RpcResponse;
 import com.github.dengqiao.rpc.core.requestHandler.impl.HttpRequestHandler;
+import com.github.dengqiao.rpc.locate.ServiceLocator;
 
 public class JdkRpcProxyFactoryBean extends AbstractProxyFactoryBean implements InvocationHandler {
 
@@ -24,21 +24,21 @@ public class JdkRpcProxyFactoryBean extends AbstractProxyFactoryBean implements 
 		throw reponse.getException();
 	}
 	
-	public Object createProxy(Class<?> clazz,ClientProfile clientProfile) {
+	public Object createProxy(Class<?> clazz,ServiceLocator serviceLocator) {
 		this.setServiceInterface(clazz);
-		this.setClientProfile(clientProfile);
+		this.setClientProfile(serviceLocator.getClientProfile());
+		this.setServiceLocator(serviceLocator);
 		this.init();
-		initServiceLocator();
 		this.setRequestHandler(new HttpRequestHandler());
 		return Proxy.newProxyInstance(getBeanClassLoader(), new Class<?>[]{clazz}, this);
 	}
 	
-	public static Object create(Class<?> clazz,ClientProfile clientProfile){
-		return create(JdkRpcProxyFactoryBean.class,clazz,clientProfile);
+	public static Object create(Class<?> clazz,ServiceLocator serviceLocator){
+		return create(JdkRpcProxyFactoryBean.class,clazz,serviceLocator);
 	}
 	
 	public static Object create(Class<? extends JdkRpcProxyFactoryBean> jdkRpcProxyFactoryBean ,
-			Class<?> clazz,ClientProfile clientProfile){
+			Class<?> clazz,ServiceLocator serviceLocator){
 		Object proxy = proxyMap.get(clazz);
 		if(proxy == null ){
 			synchronized (JdkRpcProxyFactoryBean.class) {
@@ -47,7 +47,7 @@ public class JdkRpcProxyFactoryBean extends AbstractProxyFactoryBean implements 
 					return proxy;
 				}
 				try {
-					proxy = jdkRpcProxyFactoryBean.newInstance().createProxy(clazz,clientProfile);
+					proxy = jdkRpcProxyFactoryBean.newInstance().createProxy(clazz,serviceLocator);
 				} catch (Exception e) {
 					throw new RpcException("create proxy exception ", e);
 				}
