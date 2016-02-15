@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
 import com.github.dengqiao.rpc.core.ClientProfile;
@@ -13,10 +15,13 @@ import com.github.dengqiao.rpc.core.RpcRequest;
 import com.github.dengqiao.rpc.core.RpcResponse;
 import com.github.dengqiao.rpc.core.requestHandler.RequestHandler;
 import com.github.dengqiao.rpc.locate.ServiceLocator;
+import com.github.dengqiao.rpc.utils.ExceptionUtils;
 import com.github.dengqiao.rpc.utils.IpUtils;
 import com.github.dengqiao.rpc.utils.ServicePathUtils;
 
 public abstract class AbstractProxyFactoryBean {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AbstractProxyFactoryBean.class);
 	
 	private Class<?> serviceInterface;
 	
@@ -63,9 +68,36 @@ public abstract class AbstractProxyFactoryBean {
 	}
 	
 	protected RpcResponse executeRpcRequest(RpcRequest rpcRequest){
-		byte[] byteRequest = clientProfile.getRpcCodec().encode(rpcRequest);
-		byte[] response = doRequest(rpcRequest,byteRequest);
-		return (RpcResponse)clientProfile.getRpcCodec().decode(response);
+		try{
+			byte[] byteRequest = clientProfile.getRpcCodec().encode(rpcRequest);
+			byte[] response = null;
+			try{
+				response = doRequest(rpcRequest,byteRequest);
+			}catch(RpcException e){
+				if(ExceptionUtils.isNetworkException(e)){
+					response =  retryRequest(rpcRequest,byteRequest);
+				}
+				throw e;
+			}
+			return (RpcResponse)clientProfile.getRpcCodec().decode(response);
+		}catch(Throwable e){
+			RpcResponse errRes = new RpcResponse();
+			errRes.setException(e);
+			return errRes;
+		}
+	}
+	
+	private byte[] retryRequest(RpcRequest rpcRequest,byte[] byteRequest){
+		int retryCount = 1;
+		while(retryCount< this.clientProfile.getRetryCount()){ 
+			try{
+				return doRequest(rpcRequest,byteRequest);
+			}catch(Throwable e){
+				logger.error("retryRequest error , retryCount "+retryCount ,e);
+			}
+			retryCount++;
+		}
+		throw new RpcException("request execute  "+ retryCount+" ,retry fail!!!");
 	}
 	
 	protected byte[] doRequest(RpcRequest rpcRequest,byte[] byteRequest){
