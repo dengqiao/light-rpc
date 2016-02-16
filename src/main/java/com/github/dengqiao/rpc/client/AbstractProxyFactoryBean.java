@@ -70,16 +70,17 @@ public abstract class AbstractProxyFactoryBean {
 	protected RpcResponse executeRpcRequest(RpcRequest rpcRequest){
 		try{
 			byte[] byteRequest = clientProfile.getRpcCodec().encode(rpcRequest);
-			byte[] response = null;
 			try{
-				response = doRequest(rpcRequest,byteRequest);
+				byte[] response = doRequest(rpcRequest,byteRequest);
+				return (RpcResponse)clientProfile.getRpcCodec().decode(response);
 			}catch(RpcException e){
 				if(ExceptionUtils.isNetworkException(e)){
-					response =  retryRequest(rpcRequest,byteRequest);
+					return  (RpcResponse)clientProfile.getRpcCodec().decode(
+							retryRequest(rpcRequest,byteRequest));
 				}
 				throw e;
 			}
-			return (RpcResponse)clientProfile.getRpcCodec().decode(response);
+			
 		}catch(Throwable e){
 			RpcResponse errRes = new RpcResponse();
 			errRes.setException(e);
@@ -89,7 +90,7 @@ public abstract class AbstractProxyFactoryBean {
 	
 	private byte[] retryRequest(RpcRequest rpcRequest,byte[] byteRequest){
 		int retryCount = 1;
-		while(retryCount< this.clientProfile.getRetryCount()){ 
+		while(retryCount <= this.clientProfile.getRetryCount()){ 
 			try{
 				return doRequest(rpcRequest,byteRequest);
 			}catch(Throwable e){

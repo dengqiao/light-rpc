@@ -32,6 +32,19 @@ public class JdkRpcProxyFactoryTest extends TestCase{
 		ServiceLocator sl = new ZkServiceLocator();
 		sl.setClientProfile(TestHelper.getClientProfile());
 		sl.getClientProfile().setRetryCount(2);
+		SoService soService = 
+				(SoService)JdkRpcProxyFactoryRetryExtend.create(JdkRpcProxyFactoryRetryExtend.class,
+						SoService.class, sl);
+		Assert.assertTrue(soService.getSoById(1L).getId().equals(1L));
+		Assert.assertTrue(JdkRpcProxyFactoryRetryExtend.reqCount==3);
+	}
+	
+	@Test
+	public void testExecuteRpcRequestRetry2(){
+		JdkRpcProxyFactoryRetryExtend.reqCount =0;
+		ServiceLocator sl = new ZkServiceLocator();
+		sl.setClientProfile(TestHelper.getClientProfile());
+		sl.getClientProfile().setRetryCount(1);
 		try{
 			SoService soService = 
 					(SoService)JdkRpcProxyFactoryRetryExtend.create(JdkRpcProxyFactoryRetryExtend.class,
@@ -40,15 +53,20 @@ public class JdkRpcProxyFactoryTest extends TestCase{
 			Assert.fail("need throw exception ");
 		}catch(Exception e){
 			Assert.assertTrue(e instanceof RpcException);
-			Assert.assertTrue(JdkRpcProxyFactoryRetryExtend.retryCount==2);
+			Assert.assertTrue(JdkRpcProxyFactoryRetryExtend.reqCount==2);
 		}
-		
-		sl.getClientProfile().setRetryCount(4);
+	}
+	
+	@Test
+	public void testExecuteRpcRequestRetry3(){
+		ServiceLocator sl = new ZkServiceLocator();
+		sl.setClientProfile(TestHelper.getClientProfile());
+		sl.getClientProfile().setRetryCount(3);
 		SoService soService = 
 				(SoService)JdkRpcProxyFactoryRetryExtend.create(JdkRpcProxyFactoryRetryExtend.class,
 						SoService.class, sl);
 		Assert.assertTrue(soService.getSoById(1L).getId().equals(1L));
-		Assert.assertTrue(JdkRpcProxyFactoryRetryExtend.retryCount==3);
+		Assert.assertTrue(JdkRpcProxyFactoryRetryExtend.reqCount==3);
 	}
-
+	
 }
