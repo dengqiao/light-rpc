@@ -1,8 +1,10 @@
 package com.github.dengqiao.rpc.register.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,6 +29,8 @@ public class ZkServiceRegister extends AbstractServiceRegister implements Initia
 	public void afterPropertiesSet() throws Exception {
 		zkClient = ZKClientUtils.getZKClient(zkConnStr);
 		try {
+			//从zk中获取服务分组名称
+			initGroupName();
 			ZKClientUtils.ensure(zkClient, ServicePathUtils.getServicePath(this.getServiceProfile()));
 		} catch (Exception e) {
 			throw new RpcException("ServiceLocator init fail parentPath "
@@ -35,6 +39,16 @@ public class ZkServiceRegister extends AbstractServiceRegister implements Initia
 		if(autoRegister){
 			register();
 		}
+	}
+	
+	private void initGroupName()throws Exception {
+		try {
+			//从zk中获取服务分组名称
+			String groupName = ZKClientUtils.getData(zkClient, ServicePathUtils.getServerGroupName(this.getServiceProfile()));
+			if(StringUtils.isNotEmpty(groupName)){
+				this.getServiceProfile().setGroupName(groupName);
+			}
+		}catch(NoNodeException e){}
 	}
 
 	public  void  register() {

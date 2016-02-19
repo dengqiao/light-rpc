@@ -1,6 +1,7 @@
 package com.github.dengqiao.rpc.utils;
 
 import com.github.dengqiao.rpc.core.BaseProfile;
+import com.github.dengqiao.rpc.core.ServiceProfile;
 
 public class ServicePathUtils {
 	
@@ -9,6 +10,15 @@ public class ServicePathUtils {
 		sb.append("/").append(baseProfile.getServiceAppName())
 		.append("/").append(baseProfile.getGroupName())
 		.append("/").append(baseProfile.getServiceVersion());
+		return sb.toString();
+	}
+	
+	public static String  getServerGroupName(ServiceProfile serviceProfile){
+		StringBuilder sb = new StringBuilder(50);
+		sb.append("/").append(serviceProfile.getServiceAppName())
+		.append("/").append("group")
+		.append("/").append(IpUtils.getLocalIp())
+		.append(":").append(serviceProfile.getServerPort());
 		return sb.toString();
 	}
 	
