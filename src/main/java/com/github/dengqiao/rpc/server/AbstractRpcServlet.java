@@ -42,7 +42,7 @@ public abstract class AbstractRpcServlet extends HttpServlet {
 			}
 			ServiceRegister sr = new ZkServiceRegister();
 			sr.setServiceProfile(this.getServiceProfile());
-			sr.register();
+			sr.init();
 			
 		}catch(Exception e){
 			throw new ServletException("servlet init exception",e);

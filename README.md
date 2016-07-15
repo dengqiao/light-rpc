@@ -77,7 +77,7 @@ public class JdkRpcProxyFactoryTest {
 		cp.setReadTimeout(30000);
 		
 		ServiceLocator sl = new ZkServiceLocator();
-		sl.setClientProfile(TestHelper.getClientProfile());
+		sl.setClientProfile(cp);
 		
 		SoService service = 
 				(SoService)JdkRpcProxyFactoryBean.create(SoService.class, sl);

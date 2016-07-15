@@ -24,10 +24,7 @@ public class ServiceLocatorTest extends TestCase {
 		server = new TestingServer();
 		server.start();
 		zkClient = ZKClientUtils.getZKClient(server.getConnectString());
-		sl = new ZkServiceLocator();
-		sl.setZkConnStr(server.getConnectString());
-		sl.setClientProfile(TestHelper.getClientProfile());
-		sl.afterPropertiesSet();
+		sl = new ZkServiceLocator(server.getConnectString(),TestHelper.getClientProfile());
 	}
 	
 	@AfterClass

@@ -27,15 +27,12 @@ public class ServiceRegisterTest extends TestCase {
 		server.start();
 		//zkClient = ZKClientUtils.getZKClient(server.getConnectString());
 		//zkClient = ZKClientHelper.getZKClient("192.168.59.103:2181");
-		sl = new ZkServiceLocator();
-		sl.setZkConnStr(server.getConnectString());
-		sl.setClientProfile(TestHelper.getClientProfile());
-		sl.afterPropertiesSet();
+		sl = new ZkServiceLocator(server.getConnectString(),TestHelper.getClientProfile());
 		
 		sg = new ZkServiceRegister();
 		sg.setServiceProfile(TestHelper.getServiceProfile());
 		sg.setZkConnStr(server.getConnectString());
-		sg.afterPropertiesSet();
+		sg.init();
 	}
 	
 	@AfterClass

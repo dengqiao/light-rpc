@@ -8,22 +8,30 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.alibaba.fastjson.JSON;
+import com.github.dengqiao.rpc.core.ClientProfile;
 import com.github.dengqiao.rpc.core.RpcException;
 import com.github.dengqiao.rpc.locate.ServiceLocator;
 import com.github.dengqiao.rpc.utils.ServicePathUtils;
 import com.github.dengqiao.rpc.utils.ZKClientUtils;
 
-public class ZkServiceLocator extends ServiceLocator implements InitializingBean{
+public class ZkServiceLocator extends ServiceLocator {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ZkServiceLocator.class);
 	
 	private CuratorFramework zkClient;
 	private String zkConnStr;
 	
-	public void afterPropertiesSet() throws Exception {
+	public ZkServiceLocator(){}
+	
+	public ZkServiceLocator(String zkConnStr,ClientProfile  clientProfile){
+		this.setZkConnStr(zkConnStr);
+		this.setClientProfile(clientProfile);
+		init();
+	}
+	
+	public void init() {
 		zkClient = ZKClientUtils.getZKClient(zkConnStr);
 		try {
 			ZKClientUtils.ensure(zkClient, ServicePathUtils.getServicePath(this.getClientProfile()));

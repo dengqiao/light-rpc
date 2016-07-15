@@ -4,6 +4,8 @@ import com.github.dengqiao.rpc.core.ServiceProfile;
 
 public  interface ServiceRegister {
 	
+	public void init();
+	
 	public void register() ;
 	
 	public void unRegister();

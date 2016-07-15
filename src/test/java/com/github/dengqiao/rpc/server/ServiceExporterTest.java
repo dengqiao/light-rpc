@@ -36,7 +36,7 @@ public class ServiceExporterTest extends TestCase {
 		sr = new ZkServiceRegister();
 		sr.setServiceProfile(TestHelper.getServiceProfile());
 		sr.setZkConnStr(server.getConnectString());
-		sr.afterPropertiesSet();
+		sr.init();
 		
 		exporter.setTarget(new SoServiceImpl());
 		exporter.setServiceInterface(SoService.class);

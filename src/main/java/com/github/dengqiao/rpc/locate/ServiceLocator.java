@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.alibaba.fastjson.JSON;
 import com.github.dengqiao.rpc.core.ClientProfile;
@@ -17,7 +16,7 @@ import com.github.dengqiao.rpc.locate.impl.ZkServiceLocator;
  * @author dengqiao
  * 服务定位抽象基类，随机调度算法
  */
-public abstract class ServiceLocator implements InitializingBean{
+public abstract class ServiceLocator{
 
 	private static final Logger logger = LoggerFactory.getLogger(ZkServiceLocator.class);
 	
